@@ -8,7 +8,9 @@ def main():
     data = get_exchange_rates()
     export_CSV(data)
     print_exchange_rates(data)
-    get_user_inputs(data)
+    currency_from, currency_to, currency_amount = get_user_inputs(data)
+    converted_currency_amount = convert_currency(data, currency_from, currency_to, currency_amount)
+    print_converted_currency(currency_from, currency_to, currency_amount, converted_currency_amount)
 
 
 def get_exchange_rates():
@@ -100,14 +102,31 @@ def get_user_inputs(data):
     print("-------------------------------------------------")
     while True:
         currency_amount = input().upper()
-        if type(currency_amount) == "int" or type(currency_amount) == "float":
+        try:
+            float(currency_amount)
             break
-        else:
+        except ValueError:
             print("ERROR, wrong input. Input the currency amount to be converted.")
 
+    return(currency_from, currency_to, currency_amount)
 
-    print(currency_from, currency_to, currency_amount)
 
+def convert_currency(data, currency_from_code, currency_to_code, currency_amount):
+    # Fetch values of currencies
+    for rows in data:
+        if rows[0] == currency_from_code:
+            currency_from_value = rows[2]
+        if rows[0] == currency_to_code:
+            currency_to_value = rows[2]
+
+    converted_currency_amount = float(currency_from_value) * float(currency_to_value) * float(currency_amount)
+    return(converted_currency_amount)
+
+
+def print_converted_currency(currency_from, currency_to, currency_amount, converted_currency_amount):
+    print("-------------------------------")
+    print(f"{currency_amount} {currency_from} = {converted_currency_amount} {currency_to}")
+    print("-------------------------------")
 
 main()
 
